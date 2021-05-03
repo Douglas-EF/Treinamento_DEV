@@ -52,3 +52,4 @@ internacional|time
 fusca|carro
 basquete|esporte
 arara|animais
+martilho|religioso

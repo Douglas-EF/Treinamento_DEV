@@ -2,17 +2,16 @@
 
 $ary_palavra;
 $ary_tracejada;
-$ary_verificada;
 $plv_tracejada;
 $list_keys = [];
 $plv_informada;
 $dica;
-$life = 0;
+$life = 7;
 
 
 
 
-$opcoes = array(1, 2, 3, 4);
+$opcoes = array(1, 2, 3, 4, 5);
 
 while (true) {
     $opc_selected = exibeMenu();
@@ -28,15 +27,13 @@ while (true) {
         converterDados($palavra);
 
         while (true) {
-            if ($life <= 7) {
+            if ($life >= 0) {
                 animacao($life);
                 echo "┗━━━━━> " . $plv_tracejada . "\n\n";
                 life($life);
                 if (in_array("-", $ary_tracejada)) {
 
                     echo "\n" . "►►►►► DICA: " . $dica . "\n";
-                    //converterDados($palavra);
-
 
                     $letra_informada = readline("►►►►►►►►►► Informe uma letra: ");
 
@@ -50,7 +47,7 @@ while (true) {
 
                         $plv_tracejada = implode($ary_tracejada);
                     } else {
-                        $life++;
+                        $life--;
                     }
                 } else {
                     animacao(202);
@@ -62,7 +59,7 @@ while (true) {
                 return false;
             }
         }
-        //
+        // CADASTRAR PALAVRA
     } elseif ($opc_selected == 2) {
         echo "\n\n" . "┗━━━━━━━━━━━━━━━| CADASTRAR PALAVRA |━━━━━━━━━━━━━━━┛" . "\n\n\n";
         while (true) {
@@ -79,15 +76,103 @@ while (true) {
 
             echo "►►►►►►►►►► OPA, NÃO ENTENDI O QUE VOCÊ DIGITOU, TENTE NOVAMENTE..." . "\n\n\n";
         }
+        // MULTIPLAYER
     } elseif ($opc_selected == 3) {
-        exibirHistorico();
+        echo "\n" . "┗━━━━━━━━━━━━━━━| MULTIPLAYER |━━━━━━━━━━━━━━━┛" . "\n\n\n";
+        $player0 = readline("►►►►►►►►►►►►►►► Nome do Player 1: ");
+        echo "\n";
+        $player1 = readline("►►►►►►►►►►►►►►► Nome do Player 2: ");
+        $animacion = 0;
+        $life_pvp_0 = 7;
+        $life_pvp_1 = 7;
+        $ganhou = 0;
+        $teste = 7;
+        $plv_informadas = "";
+        $plv_play_pvp_0 = "";
+        $plv_play_pvp_1 = "";
+
+
+        if (!(empty($player0 or $player1))) {
+            $consulta = consultarPalavras();
+            $numero_random = random_int(0, array_key_last($dados));
+
+            $palavra = searchPalavra($numero_random);
+            $plv_tracejada = tracejarPalavra($palavra);
+            converterDados($palavra);
+            $jogador = $player0;
+
+            while (true) {
+                animacao($teste);
+                echo "┗━━━━━> " . $plv_tracejada . "\n\n";
+                echo "►►►►►►►►►►►►►►► $jogador, agora é sua vez..." . "\n";
+                echo "►►►►►►►►►► DICA: " . $dica . "\n";
+                echo "Palavras informadas: " . $plv_informadas;
+                echo "\n" . implode($ary_palavra) . "\n";
+                $REQUEST = readline("►►►►► Informe um letra: ");
+
+
+
+                if (in_array("-", $ary_tracejada)) {
+
+                    if (in_array("$REQUEST", $ary_palavra)) {
+                        if ($jogador == $player0) {
+                            alter_tracejada($REQUEST);
+                            $plv_play_pvp_0 .= $REQUEST;
+                            $plv_informadas = $plv_play_pvp_0;
+                        } else {
+                            alter_tracejada($REQUEST);
+                            $plv_play_pvp_1 .= $REQUEST;
+                            $plv_informadas = $plv_play_pvp_1;
+                        }
+                    } else {
+                        if ($jogador == $player0) {
+                            $teste = $life_pvp_1;
+                            $life_pvp_0--;
+                            $jogador = $player1;
+                            $plv_play_pvp_0 .= $REQUEST;
+                            $plv_informadas = $plv_play_pvp_1;
+                        } else {
+                            $teste = $life_pvp_0;
+                            $life_pvp_1--;
+                            $jogador = $player0;
+                            $plv_play_pvp_1 .= $REQUEST;
+                            $plv_informadas = $plv_play_pvp_1;
+                        }
+                    }
+                } else {
+                    $ganhou = 1;
+                    break;
+                }
+
+                if (($life_pvp_0 <= 0) && ($life_pvp_1 <= 0)) {
+                    echo "Game over!";
+                    break;
+                }
+            }
+            if ($ganhou) {
+                echo "Parabéns, $jogador vc ganhou!";
+            }
+        } else {
+        }
+        // EXIBIR HISTÓRICO
     } elseif ($opc_selected == 4) {
+        exibirHistorico();
+        // EXIT
+    } elseif ($opc_selected == 5) {
         return false;
     }
 }
 
+function alter_tracejada($REQUEST)
+{
+    global $ary_palavra, $ary_tracejada, $plv_tracejada;
+    $list_keys = array_search_all($REQUEST, $ary_palavra);
+    foreach ($list_keys as $key) {
+        $ary_tracejada[$key] = "$REQUEST";
+    }
 
-
+    $plv_tracejada = implode($ary_tracejada);
+}
 
 function iniciar()
 {
@@ -138,7 +223,7 @@ function exibirHistorico()
         array_multisort(array_column($reg_linhas, 'palavra'), SORT_DESC, array_column($reg_linhas, 'life'), SORT_ASC,  $reg_linhas);
     }
 
-    echo "\n" . "┏━━━━━━━━━━━━━━━━━━━━━━━━| RANK |━━━━━━━━━━━━━━━━━━━━━━━━━━━┓" . "\n";
+    echo "\n" . "┏━━━━━━━━━━━━━━━━━━━━━━━| HISTÓRICO |━━━━━━━━━━━━━━━━━━━━━━━┓" . "\n";
     $rank = $reg_linhas;
 
     foreach ($rank as $values) {
@@ -163,8 +248,9 @@ function exibeMenu()
              ┏━━━━━━━━━━━━━━━━━━━━━━━┓
              | 1 - Iniciar           | 
              | 2 - Cadastrar palavra |
-             | 3 - Histórico         |
-             | 4 - Sair              |
+             | 3 - Multiplayer       |
+             | 4 - Histórico         |
+             | 5 - Sair              |
              ┗━━━━━━━━━━━━━━━━━━━━━━━┛     
     " . "\n\n";
 
@@ -370,56 +456,56 @@ function life($case)
         case 0:
             echo "
        _______________
-LIFE: ║ ● ● ● ● ● ● ● ║
+LIFE: ║ - - - - - - - ║
        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾";
             break;
 
         case 1:
             echo "
        _______________
-LIFE: ║ ● ● ● ● ● ● - ║
+LIFE: ║ ● - - - - - - ║
        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾";
             break;
 
         case 2:
             echo "
        _______________
-LIFE: ║ ● ● ● ● ● - - ║
+LIFE: ║ ● ● - - - - - ║
        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾";
             break;
 
         case 3:
             echo "
        _______________
-LIFE: ║ ● ● ● ● - - - ║
+LIFE: ║ ● ● ● - - - - ║
        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾";
             break;
 
         case 4:
             echo "
        _______________
-LIFE: ║ ● ● ● - - - - ║
+LIFE: ║ ● ● ● ● - - - ║
        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾";
             break;
 
         case 5:
             echo "
        _______________
-LIFE: ║ ● ● - - - - - ║
+LIFE: ║ ● ● ● ● ● - - ║
        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾";
             break;
 
         case 6:
             echo "
        _______________
-LIFE: ║ ● - - - - - - ║
+LIFE: ║ ● ● ● ● ● ● - ║
        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾";
             break;
 
         case 7:
             echo "
        _______________
-LIFE: ║ - - - - - - - ║
+LIFE: ║ ● ● ● ● ● ● ● ║
        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾";
             break;
     }
