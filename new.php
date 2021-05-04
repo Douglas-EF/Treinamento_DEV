@@ -1,53 +1,66 @@
 <?php
-
+// Variavéis da opção 1
 $ary_palavra;
 $ary_tracejada;
+$view_array;
 $ary_clear;
+$array;
+//
 $plv_tracejada;
 $list_keys = [];
 $plv_informada;
 $dica;
 $life = 7;
 
-
-
-
 $opcoes = array(1, 2, 3, 4, 5);
+
+$caracteres_sem_acento = array(
+    'Š' => 'S', 'š' => 's', 'Ð' => 'Dj', '�' => 'Z', '�' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A',
+    'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I',
+    'Ï' => 'I', 'Ñ' => 'N', 'Ń' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U',
+    'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a',
+    'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i',
+    'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ń' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u',
+    'ú' => 'u', 'û' => 'u', 'ü' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'ƒ' => 'f',
+    'ă' => 'a', 'î' => 'i', 'â' => 'a', 'ș' => 's', 'ț' => 't', 'Ă' => 'A', 'Î' => 'I', 'Â' => 'A', 'Ș' => 'S', 'Ț' => 'T',
+);
+
 
 while (true) {
     $opc_selected = exibeMenu();
     if ($opc_selected == 1) {
 
         $consulta = consultarPalavras();
-
+        // Gerar número aleatorio conforme a quantidade de palavras no arquivo "palavras.txt"
         $numero_random = random_int(0, array_key_last($dados));
         echo "\n\n";
-
+        // Buscando a palavra com o indice == ao número gerado
         $palavra = searchPalavra($numero_random);
+
         $plv_tracejada = tracejarPalavra($palavra);
         converterDados($palavra);
-
+        formatarVariaveis($palavra);
         while (true) {
             if ($life >= 0) {
+
                 animacao($life);
-                echo "┗━━━━━> " . $plv_tracejada . "\n\n";
+                echo "┗━━━━━> " . (implode($view_array)) . "\n\n";
                 life($life);
-                if (in_array("-", $ary_tracejada)) {
+                if (in_array("-", $view_array)) {
 
                     echo "\n" . "►►►►► DICA: " . $dica . "\n";
 
                     $letra_informada = readline("►►►►►►►►►► Informe uma letra: ");
+                    
 
-                    //if (in_array($letra_informada, $ary_clear)) {
-                    if (in_array($letra_informada, $ary_palavra)) {
+                    if (in_array($letra_informada, $ary_clear)) {
 
-                        // Enquanto tiver keys corespondentes a determinada letra ele ira prencher o array($ary_tracejada)
-                        $list_keys = array_search_all($letra_informada, $ary_palavra);
-                        foreach ($list_keys as $key) {
-                            $ary_tracejada[$key] = "$letra_informada";
+                        $id =  array_search_all($letra_informada, $ary_clear);
+                        foreach ($id as $key) {
+                            $view_array[$key] = $array[$key];
                         }
 
-                        $plv_tracejada = implode($ary_tracejada);
+                        $palavra_informed = implode($view_array);
                     } else {
                         $life--;
                     }
@@ -164,6 +177,45 @@ while (true) {
     }
 }
 
+function formatarVariaveis($palavra)
+{
+    global $view_array, $ary_clear, $array, $caracteres_sem_acento;
+
+    $nova_string = strtr($palavra, $caracteres_sem_acento); // Substituir os caracters especiais
+    $view_array = str_split(tracejarPalavra($nova_string)); // Tracejar a palavra e apresentar as letras conforme acerto
+    $ary_clear = str_split($nova_string); // Tranformar em array
+    $array = str_split_unicode($palavra); // Manter os caracteres conforme realmente são
+}
+
+// Função para percorrer todo o Array em busca de uma determinada letra, e retonar mais de uma chave(caso tenha)
+function array_search_all($letra, $array)
+{
+    foreach ($array as $keys => $valor) {
+        if ($array[$keys] == $letra) {
+            $list[] = $keys;
+        }
+    }
+    return ($list);
+}
+
+// Função responsável por tracejar uma palavra
+function tracejarPalavra($palavra)
+{
+    $id_space = array_search(" ", str_split_unicode($palavra));
+    $plv_tracejada = mb_str_pad("", strlen($palavra), "-");
+    $plv_tracejada[$id_space] = " ";
+    return $plv_tracejada;
+}
+
+// Função para converter a palavra e a palavra tracejada em Array
+function converterDados($palavra)
+{
+    global $ary_palavra, $ary_tracejada, $ary_clear, $caracteres_sem_acento;
+    $ary_palavra = str_split_unicode($palavra);
+    $ary_tracejada = str_split(tracejarPalavra($palavra));
+    $ary_clear = strtr($palavra, $caracteres_sem_acento);
+}
+
 function alter_tracejada($REQUEST)
 {
     global $ary_palavra, $ary_tracejada, $plv_tracejada;
@@ -263,35 +315,6 @@ function exibeMenu()
     }
 
     return $opc_selected;
-}
-
-// Função para percorrer todo o Array em busca de uma determinada letra, e retonar mais de uma chave(caso tenha)
-function array_search_all($letra, $array)
-{
-    foreach ($array as $keys => $valor) {
-        if ($array[$keys] == $letra) {
-            $list[] = $keys;
-        }
-    }
-    return ($list);
-}
-
-// Função responsável por tracejar uma palavra
-function tracejarPalavra($palavra)
-{
-    $id_space = array_search(" ", str_split_unicode($palavra));    
-    $plv_tracejada = mb_str_pad("", strlen($palavra), "-");
-    $plv_tracejada [$id_space] = " ";    
-    return $plv_tracejada;
-}
-
-// Função para converter a palavra e a palavra tracejada em Array
-function converterDados($palavra)
-{
-    global $ary_palavra, $ary_tracejada, $ary_clear, $caracteres_sem_acento;
-    $ary_palavra = str_split_unicode($palavra);
-    $ary_tracejada = str_split(tracejarPalavra($palavra));
-    $ary_clear = strtr($palavra, $caracteres_sem_acento);
 }
 
 // Função para armazenar em array as palavras salvas no arquivo palavras.txt 
@@ -515,7 +538,8 @@ LIFE: ║ ● ● ● ● ● ● ● ║
     }
 }
 
-function str_split_unicode($str, $l = 0) {
+function str_split_unicode($str, $l = 0)
+{
     if ($l > 0) {
         $ret = array();
         $len = mb_strlen($str, "UTF-8");
@@ -526,14 +550,3 @@ function str_split_unicode($str, $l = 0) {
     }
     return preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
 }
-
-$caracteres_sem_acento = array(
-    'Š' => 'S', 'š' => 's', 'Ð' => 'Dj', '�' => 'Z', '�' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A',
-    'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I',
-    'Ï' => 'I', 'Ñ' => 'N', 'Ń' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U',
-    'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a',
-    'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i',
-    'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ń' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u',
-    'ú' => 'u', 'û' => 'u', 'ü' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'ƒ' => 'f',
-    'ă' => 'a', 'î' => 'i', 'â' => 'a', 'ș' => 's', 'ț' => 't', 'Ă' => 'A', 'Î' => 'I', 'Â' => 'A', 'Ș' => 'S', 'Ț' => 'T',
-);
