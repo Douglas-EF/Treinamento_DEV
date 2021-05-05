@@ -1,83 +1,65 @@
-<?php
+function max($array) {
+    ...
+    return $max;
+}
 
+$maior = max([1, 5, 7, 8, 1, 20])
+
+<?php
 $ary_palavra;
 $ary_tracejada;
+$view_array;
 $ary_clear;
+$array;
+
 $plv_tracejada;
 $list_keys = [];
 $plv_informada;
 $dica;
 $life = 7;
 
-
-
-
 $opcoes = array(1, 2, 3, 4, 5);
+
+$caracteres_sem_acento = array(
+    'Š' => 'S', 'š' => 's', 'Ð' => 'Dj', '�' => 'Z', '�' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A',
+    'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I',
+    'Ï' => 'I', 'Ñ' => 'N', 'Ń' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U',
+    'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a',
+    'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i',
+    'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ń' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u',
+    'ú' => 'u', 'û' => 'u', 'ü' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'ƒ' => 'f',
+    'ă' => 'a', 'î' => 'i', 'â' => 'a', 'ș' => 's', 'ț' => 't', 'Ă' => 'A', 'Î' => 'I', 'Â' => 'A', 'Ș' => 'S', 'Ț' => 'T',
+);
+
 
 while (true) {
     $opc_selected = exibeMenu();
+    // JOGA DA FORCA SINGLE PLAYER
     if ($opc_selected == 1) {
 
-        $consulta = consultarPalavras();
+        consultarPalavras();
 
+        // Gerar número aleatorio conforme a quantidade de palavras no arquivo "palavras.txt"
         $numero_random = random_int(0, array_key_last($dados));
         echo "\n\n";
 
+        // Buscando a palavra com o indice == ao número gerado
         $palavra = searchPalavra($numero_random);
-        $plv_tracejada = tracejarPalavra($palavra);
-        converterDados($palavra);
 
-        while (true) {
-            if ($life >= 0) {
-                animacao($life);
-                echo "┗━━━━━> " . $plv_tracejada . "\n\n";
-                life($life);
-                if (in_array("-", $ary_tracejada)) {
+        // Realiza a formatação(tracejar, transformar variavéis em array) para manipução através do escopo global
+        formatarVariaveis($palavra);
 
-                    echo "\n" . "►►►►► DICA: " . $dica . "\n";
+        // Função start da partida
+        startGame();
 
-                    $letra_informada = readline("►►►►►►►►►► Informe uma letra: ");
+        // Restaurando a vida do Jogador
+        $life = 7;
 
-                    //if (in_array($letra_informada, $ary_clear)) {
-                    if (in_array($letra_informada, $ary_palavra)) {
-
-                        // Enquanto tiver keys corespondentes a determinada letra ele ira prencher o array($ary_tracejada)
-                        $list_keys = array_search_all($letra_informada, $ary_palavra);
-                        foreach ($list_keys as $key) {
-                            $ary_tracejada[$key] = "$letra_informada";
-                        }
-
-                        $plv_tracejada = implode($ary_tracejada);
-                    } else {
-                        $life--;
-                    }
-                } else {
-                    animacao(202);
-                    insertHistorico($palavra, (7 - $life));
-                    return false;
-                }
-            } else {
-                animacao(404);
-                return false;
-            }
-        }
         // CADASTRAR PALAVRA
     } elseif ($opc_selected == 2) {
-        echo "\n\n" . "┗━━━━━━━━━━━━━━━| CADASTRAR PALAVRA |━━━━━━━━━━━━━━━┛" . "\n\n\n";
-        while (true) {
-            global $plv_informada;
-            $plv_informada = readline("►►►►►►►►►►►►►►► Informe a palavra que deseja cadastrar: ");
+        // Função para realizar o cadastro da palavra
+        cadastrarPalavra();
 
-            if (!(empty($plv_informada))) {
-                iniciar();
-
-                echo "\n \t" . "Obaa, palavra cadastrada com sucesso!!!" . "\n";
-
-                return false;
-            }
-
-            echo "►►►►►►►►►► OPA, NÃO ENTENDI O QUE VOCÊ DIGITOU, TENTE NOVAMENTE..." . "\n\n\n";
-        }
         // MULTIPLAYER
     } elseif ($opc_selected == 3) {
         $animacion = 0;
@@ -97,30 +79,39 @@ while (true) {
 
         if (!(empty($player0 and $player1))) {
             $consulta = consultarPalavras();
-            $numero_random = random_int(0, array_key_last($dados));
 
+            // Gerar número aleatorio conforme a quantidade de palavras no arquivo "palavras.txt"
+            $numero_random = random_int(0, array_key_last($dados));
+            echo "\n\n";
+
+            // Buscando a palavra com o indice == ao número gerado
             $palavra = searchPalavra($numero_random);
-            $plv_tracejada = tracejarPalavra($palavra);
-            converterDados($palavra);
+
+            // Realiza a formatação(tracejar, transformar variavéis em array) para manipução através do escopo global
+            formatarVariaveis($palavra);
+
+
+            #$plv_tracejada = tracejarPalavra($palavra);
+            #converterDados($palavra);
             $jogador = $player0;
 
             while (true) {
-                if (in_array("-", $ary_tracejada)) {
+                if (in_array("-", $view_array)) {
                     animacao($teste);
-                    echo "┗━━━━━> " . $plv_tracejada . "\n\n";
+                    echo "┗━━━━━> " . implode($view_array) . "\n\n";
                     echo "►►►►►►►►►►►►►►► $jogador, agora é sua vez..." . "\n";
                     echo "►►►►►►►►►► DICA: " . $dica . "\n";
                     echo "Palavras informadas: " . $plv_informadas;
-                    echo "\n" . implode($ary_palavra) . "\n";
+                    echo "\n" . implode($array) . "\n";
                     $REQUEST = readline("►►►►► Informe um letra: ");
 
-                    if (in_array("$REQUEST", $ary_palavra)) {
+                    if (in_array($REQUEST, $ary_clear)) {
                         if ($jogador == $player0) {
-                            alter_tracejada($REQUEST);
+                            alterarView($REQUEST);
                             $plv_play_pvp_0 .= $REQUEST;
                             $plv_informadas = $plv_play_pvp_0;
                         } else {
-                            alter_tracejada($REQUEST);
+                            alterarView($REQUEST);
                             $plv_play_pvp_1 .= $REQUEST;
                             $plv_informadas = $plv_play_pvp_1;
                         }
@@ -150,7 +141,8 @@ while (true) {
                 }
             }
             if ($ganhou) {
-                echo "Parabéns, $jogador vc ganhou!";
+                animacaoMultiplayer($jogador);
+                //echo "Parabéns, $jogador vc ganhou!";
             }
         } else {
             echo "\n\n" . "*************** PARA PROSSEGUIRMOS É NECESSÁRRIO INFORMAR OS NOMES DOS JOGADORES!!!" . "\n\n";
@@ -164,31 +156,120 @@ while (true) {
     }
 }
 
-function alter_tracejada($REQUEST)
+function startGame()
 {
-    global $ary_palavra, $ary_tracejada, $plv_tracejada;
-    $list_keys = array_search_all($REQUEST, $ary_palavra);
-    foreach ($list_keys as $key) {
-        $ary_tracejada[$key] = "$REQUEST";
-    }
+    global $life, $view_array, $dica, $ary_clear, $array, $palavra;
+    while (true) {
+        if ($life >= 0) {
 
-    $plv_tracejada = implode($ary_tracejada);
+            animacao($life);
+            echo "┗━━━━━> " . (implode($view_array)) . "\n\n";
+            life($life);
+            if (in_array("-", $view_array)) {
+
+                echo "\n" . "►►►►► DICA: " . $dica . "\n";
+
+                $letra_informada = readline("►►►►►►►►►► Informe uma letra: ");
+
+                if (in_array($letra_informada, $ary_clear)) {
+
+                    $id =  array_search_all($letra_informada, $ary_clear);
+                    foreach ($id as $key) {
+                        $view_array[$key] = $array[$key];
+                    }
+                } else {
+                    $life--;
+                }
+            } else {
+                animacao(202);
+                insertHistorico($palavra, (7 - $life));
+                return false;
+            }
+        } else {
+            animacao(404);
+            return false;
+        }
+    }
 }
 
-function iniciar()
+function formatarVariaveis($palavra)
 {
+    global $view_array, $ary_clear, $array, $caracteres_sem_acento;
+
+    $nova_string = strtr($palavra, $caracteres_sem_acento); // Substituir os caracters especiais
+    $view_array = str_split(tracejarPalavra($nova_string)); // Tracejar a palavra e apresentar as letras conforme acerto
+    $ary_clear = str_split($nova_string); // Tranformar em array
+    $array = str_split_unicode($palavra); // Manter os caracteres conforme realmente são
+}
+
+// Função para percorrer todo o Array em busca de uma determinada letra, e retonar mais de uma chave(caso tenha)
+function array_search_all($letra, $array)
+{
+    foreach ($array as $keys => $valor) {
+        if ($array[$keys] == $letra) {
+            $list[] = $keys;
+        }
+    }
+    return ($list);
+}
+
+// Função responsável por tracejar uma palavra
+function tracejarPalavra($palavra)
+{
+    $id_space = array_search(" ", str_split_unicode($palavra));
+    //echo "|" . $id_space . "|";
+    $plv_tracejada = mb_str_pad("", strlen($palavra), "-");
+    if (!empty($id_space)) {
+        $plv_tracejada[$id_space] = " ";
+    } else {
+        $plv_tracejada;
+    }
+
+
+    return $plv_tracejada;
+}
+
+// Função para converter a palavra e a palavra tracejada em Array
+
+
+function alterarView($palavra)
+{
+    global $view_array, $ary_clear, $array;
+    $id = array_search_all($palavra, $ary_clear);
+    foreach ($id as $key) {
+        $view_array[$key] = $array[$key];
+    }
+}
+
+function cadastrarPalavra()
+{
+    echo "\n\n" . "┗━━━━━━━━━━━━━━━| CADASTRAR PALAVRA |━━━━━━━━━━━━━━━┛" . "\n\n\n";
     while (true) {
         global $plv_informada;
-        $pergunta_status = strtoupper(readline("►►►►►►►►►► Deseja adicionar um grupo(irá servir como dica) para esta palavra (Y/N)?"));
-        if (!($pergunta_status == "Y" || $pergunta_status == "N")) {
-            echo "►►►►► OPA, NÃO ENTENDI O QUE VOCÊ DIGITOU, TENTE NOVAMENTE..." . "\n\n\n";
-            continue;
-        } elseif ($pergunta_status == "Y") {
-            $plv_status = readline("►►►►► Qual o nome do grupo? ");
-            insertPalavra($plv_informada, $plv_status);
-            return false;
-        } else {
-            return false;
+        $plv_informada = readline("►►►►►►►►►►►►►►► Informe a palavra que deseja cadastrar: ");
+
+        if (!(empty($plv_informada))) {
+            while (true) {
+                global $plv_informada;
+                echo "\n";
+                $pergunta_status = strtoupper(readline("►►►►►►►►►► Deseja adicionar um grupo(irá servir como dica) para esta palavra (Y/N)?"));
+                if (!($pergunta_status == "Y" || $pergunta_status == "N")) {
+                    echo "►►►►► OPA, NÃO ENTENDI O QUE VOCÊ DIGITOU, TENTE NOVAMENTE..." . "\n\n\n";
+                    continue;
+                } elseif ($pergunta_status == "Y") {
+                    echo "\n";
+                    $plv_status = readline("►►►►► Qual o nome do grupo? ");
+                    insertPalavra($plv_informada, $plv_status);
+                } else {
+                    insertPalavra($plv_informada, "");
+                }
+
+                echo "\n \t" . "Obaa, palavra cadastrada com sucesso!!!" . "\n";
+
+                return false;
+            }
+
+            echo "►►►►►►►►►► OPA, NÃO ENTENDI O QUE VOCÊ DIGITOU, TENTE NOVAMENTE..." . "\n\n\n";
         }
     }
 }
@@ -263,35 +344,6 @@ function exibeMenu()
     }
 
     return $opc_selected;
-}
-
-// Função para percorrer todo o Array em busca de uma determinada letra, e retonar mais de uma chave(caso tenha)
-function array_search_all($letra, $array)
-{
-    foreach ($array as $keys => $valor) {
-        if ($array[$keys] == $letra) {
-            $list[] = $keys;
-        }
-    }
-    return ($list);
-}
-
-// Função responsável por tracejar uma palavra
-function tracejarPalavra($palavra)
-{
-    $id_space = array_search(" ", str_split_unicode($palavra));    
-    $plv_tracejada = mb_str_pad("", strlen($palavra), "-");
-    $plv_tracejada [$id_space] = " ";    
-    return $plv_tracejada;
-}
-
-// Função para converter a palavra e a palavra tracejada em Array
-function converterDados($palavra)
-{
-    global $ary_palavra, $ary_tracejada, $ary_clear, $caracteres_sem_acento;
-    $ary_palavra = str_split_unicode($palavra);
-    $ary_tracejada = str_split(tracejarPalavra($palavra));
-    $ary_clear = strtr($palavra, $caracteres_sem_acento);
 }
 
 // Função para armazenar em array as palavras salvas no arquivo palavras.txt 
@@ -515,7 +567,19 @@ LIFE: ║ ● ● ● ● ● ● ● ║
     }
 }
 
-function str_split_unicode($str, $l = 0) {
+function animacaoMultiplayer($nome)
+{
+    $name = mb_str_pad($nome, 8, " ");
+    echo "
+    ╭━━━━╮   ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃╭╮╭╮┃┈┈ ┃ PARABÉNS $name, VOCÊ VENCEU!!! ┃
+   ┗┫┏━━┓┣┛  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+    ┃╰━━╯┃
+    ╰┳━━┳╯" . "\n";
+}
+
+function str_split_unicode($str, $l = 0)
+{
     if ($l > 0) {
         $ret = array();
         $len = mb_strlen($str, "UTF-8");
@@ -526,14 +590,3 @@ function str_split_unicode($str, $l = 0) {
     }
     return preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
 }
-
-$caracteres_sem_acento = array(
-    'Š' => 'S', 'š' => 's', 'Ð' => 'Dj', '�' => 'Z', '�' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A',
-    'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I',
-    'Ï' => 'I', 'Ñ' => 'N', 'Ń' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U',
-    'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a',
-    'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i',
-    'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ń' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u',
-    'ú' => 'u', 'û' => 'u', 'ü' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y', 'ƒ' => 'f',
-    'ă' => 'a', 'î' => 'i', 'â' => 'a', 'ș' => 's', 'ț' => 't', 'Ă' => 'A', 'Î' => 'I', 'Â' => 'A', 'Ș' => 'S', 'Ț' => 'T',
-);

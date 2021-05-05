@@ -3,10 +3,11 @@ caranguejo|6/7
 cavalo|3/7
 cruzeiro|2/7
 são paulo|0/7
+são paulo|7/7
 são paulo|0/7
 são paulo|0/7
+camisa|0/7
 são paulo|0/7
-são paulo|0/7
-são paulo|0/7
-são paulo|0/7
-são paulo|4/7
+camisa|6/7
+são paulo|1/7
+telefone|6/7

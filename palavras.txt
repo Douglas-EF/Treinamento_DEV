@@ -1,1 +1,4 @@
-são paulo|timedouglas|jeronimo
+são paulo|time
+telefone|dispositivo
+caminhao|veiculo
+papibaquigrafo|trava-linguas
