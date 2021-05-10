@@ -1,21 +1,6 @@
 <?php
-# Valor Máximo
-# Extra: com qual array a função vai me retornar o resultado errado?
-/*
-function valorMax($array)
-{
-    $maiorValor = 0;
 
-    foreach ($array as $atual) {
-        if ($atual !== $maiorValor) {
-            $maiorValor = $atual;
-        }
-    }
-
-    return $maiorValor;
-}
-
-function menor_valor($array)
+function valorMin($array)
 {
     $menorValor = 9999;
 
@@ -28,10 +13,26 @@ function menor_valor($array)
     return $menorValor;
 }
 
+# Valor Máximo
+echo "\n┗━━━━━━━━━━━━━━━| VALOR MÁXIMO\n";
+function valorMax($array)
+{
+    $maiorValor = 0;
+
+    foreach ($array as $atual) {
+        if ($atual !== $maiorValor) {
+            $maiorValor = $atual;
+        }
+    }
+
+    return $maiorValor;
+}
 $valores = valorMax([-10, -10, -8, -10]);
 echo "\n\tSAÍDA: " . $valores . "\n";
 
+
 # Soma dos Valores
+echo "\n\n┗━━━━━━━━━━━━━━━| SOMA DOS VALORES\n";
 function ary_sum($array)
 {
     $result = 0;
@@ -42,27 +43,11 @@ function ary_sum($array)
 
     return $result;
 }
-
 $valores = ary_sum([1, 5, 7, 1]);
 echo "\n\tSAÍDA: " . $valores . "\n";
-*/
-# Array Intercalados
-function ary_inter($array0, $array1)
-{
-    $result = [];
 
-    foreach ($array0 as $key0 => $value0) {
-        $result[] = [
-            $value0,
-            $array1[$key0]
-        ];         
-    }
-    print_r($result);
-}
-
-ary_inter([1, 2, 3, 4], ['a', 'b', 'c', 'd']);
-/*
-# Array Intercalados
+# Array de Valores Intercalados
+echo "\n\n┗━━━━━━━━━━━━━━━| VALORES INTERCALADOS\n";
 function ary_inter($array0, $array1)
 {
     $result = [];
@@ -73,11 +58,67 @@ function ary_inter($array0, $array1)
     }
     print_r($result);
 }
-
 ary_inter([1, 2, 3, 4], ['a', 'b', 'c', 'd']);
 
 # Array de Pares
+echo "\n\n┗━━━━━━━━━━━━━━━| VALORES EM PARES\n";
 function ary_pares($array0, $array1)
+{
+    $result = [];
+
+    foreach ($array0 as $key0 => $value0) {
+        $result[] = [
+            $value0,
+            $array1[$key0]
+        ];
+    }
+    print_r($result);
+}
+ary_pares([1, 2, 3, 4], ['a', 'b', 'c', 'd']);
+
+# Array para Embaralhar os Valores
+echo "\n\n┗━━━━━━━━━━━━━━━| EMBARALHAR VALORES\n";
+function ary_embaralhar($array)
+{
+    $result = [];
+
+    while (!empty($array)) {
+        $randkey = random_int(0, sizeof($array) - 1);
+        $result[] = $array[$randkey];
+        unset($array[$randkey]);
+        $array = array_values($array);
+    }
+
+    /*foreach ($array as $value) {
+        $dados_ary[] = $value;
+    }
+
+    while (sizeof($result) < sizeof($array)) {
+
+        $random1 = random_int(0, $size);
+        $random_key_dados = random_int(0, $size);
+
+        if (!(array_key_exists($random1, $result)) and !(in_array($dados_ary[$random_key_dados], $result))) {
+            $result[$random1] = $dados_ary[$random_key_dados];
+        } else {
+            continue;
+        }
+    }*/
+    //$result = array_values($result);
+    print_r($result);
+}
+
+$target = [];
+$iteracoes = 10000;
+for ($i = 0; $i < $iteracoes; $i++) {
+    $target[] = $i;
+}
+ary_embaralhar($target);
+
+
+# Array de Associativo
+echo "\n\n┗━━━━━━━━━━━━━━━| ARRAY ASSOCIATIVO\n";
+function ary_associativo($array0, $array1)
 {
     $result = [];
 
@@ -87,43 +128,30 @@ function ary_pares($array0, $array1)
 
     print_r($result);
 }
+ary_associativo(['nome' => 'Jacó', 'idade' => 74, 'profissão' => 'ancião'], ['nome', 'profissão']);
 
-ary_pares(['nome' => 'Jacó', 'idade' => 74, 'profissão' => 'ancião'], ['nome', 'profissão']);
 
 # Ordenar Array
-function order_ary($array)
+echo "\n\n┗━━━━━━━━━━━━━━━| ARRAY ORDENADO\n";
+function ary_order($array)
 {
     $ary_mod = $array;
     $result = [];
 
     for ($i = 0; $i < sizeof($array); $i++) {
-        $result[] = menor_valor($ary_mod);
+        $result[] = valorMin($ary_mod);
         $pesquisa = array_search($result[$i], $ary_mod);
         unset($ary_mod[$pesquisa]);
     }
 
     print_r($result);
 }
+ary_order([1, 5, 2, 4, 3]);
 
-order_ary([1, 5, 2, 4, 3]);
 
 #Remove Duplicados
+echo "\n\n┗━━━━━━━━━━━━━━━| DEL VALORES DUPLICADOS\n";
 function remove_ary($array)
-{
-    $result = [];
-
-    foreach ($array as $value) {
-        $item = $value;
-        $qtd_keys = array_keys($array, $item);
-        if () {
-            $result[] = $item;
-        }
-    }
-    print_r($result);
-}
-remove_ary([1, 2, 3, 3, 4, 5, 4, 6, 8, 6, 8, 6, 8, 6, 8]);
-
-function remove_ary_2($array)
 {
     $pre = [];
 
@@ -131,7 +159,7 @@ function remove_ary_2($array)
         $pre[$value] = true;
     }
 
-    print_r($pre);
+    //print_r($pre);
     $result = [];
 
     foreach ($pre as $key => $val) {
@@ -140,71 +168,54 @@ function remove_ary_2($array)
 
     print_r($result);
 }
-remove_ary_2([1, 2, 3, 3, 4, 5, 4, 6, 8, 6, 8, 6, 8, 6, 8]);
-*/
+remove_ary([1, 2, 3, 3, 4, 5, 4, 6, 8, 6, 8, 6, 8, 6, 8]);
 
-/*
-function embaralha_ary($array)
+# Reverter Array
+echo "\n\n┗━━━━━━━━━━━━━━━| ARRAY REVERTIDO\n";
+function ary_revert($array)
 {
     $result = [];
-    $valor = [];
-    $random = random_int(0, 90);
+    $ary_dados = [];
+    $key_last = array_key_last($array);
 
-    foreach ($array as $value) {
-        $valor[] = $value;
+    foreach ($array as $valores) {
+        $ary_dados[] = $valores;
     }
-    //print_r($valor);
-    while (sizeof($result) < sizeof($array)) {
 
-        $random = random_int(0, 4);
-
-        if (!(array_key_exists($random, $result))) {
-            $result[$random] = $valor[$random];
-        } else {
-            continue;
-        }
+    while ($key_last >= 0) {
+        $result[] = $ary_dados[$key_last];
+        $key_last--;
     }
-    arsort($result);
     print_r($result);
 }
-//embaralha_ary([1, 2, 3, 4, 5]);
+ary_revert([1, 2, 3, 4, 5, 6, 7, 7, 8, 8]);
 
-function embralhar($a, $b) 
-{
-    return rand(-1, 1);
-}
-
-function zerFor($array)
+# Achatar um Array Multidimensional
+echo "\n\n┗━━━━━━━━━━━━━━━| ARRAY MULTIDIMENSIONAL ACHATADO\n";
+function ary_achat_mult($array)
 {
     $result = [];
 
-    usort($array, 'embralhar');
+    //print_r($array);
 
     foreach ($array as $value) {
-        echo $value."\n";
-    }
-
-    
-    
-    foreach ($array as $value) {
-        $random = random_int(0, 4);
-        if (!(array_key_exists($random, $result) and isset($result[$value]))) {
-            $result[$random] = $value;
+        if (is_array($value)) {
+            $result = array_merge($result, ary_achat_mult($value));
         } else {
-            while (!(array_key_exists($random, $result) and isset($result[$value]))) {
-                $random = random_int(0, 4);
-
-                if (!(array_key_exists($random, $result) and isset($result[$value]))) {
-                    $result[$random] = $value;
-                } else {
-                    continue;
-                }
-            }
+            $result[] = $value;
         }
     }
-
-    //ksort($result);
     //print_r($result);
+
+    return $result;
 }
-*/
-//zerFor([1, 2, 3, 4, 5]);
+exibir([1, [1, 2], [1, [2, 3], 4]]);
+
+function exibir($array)
+{
+    $result = [];
+
+    $result = ary_achat_mult($array);
+
+    print_r($result);
+}
