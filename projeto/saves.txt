@@ -1,0 +1,8 @@
+Arroz|15
+Feijão|9
+Batata|25
+Macarão|50
+Maça|10
+Bombom|10
+Bolinho|66
+Presunto|10
